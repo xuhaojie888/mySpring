@@ -116,19 +116,22 @@ public class ApplicationContext {
 
 
     public Object getBean(String beanName) throws Exception{
-        Object object = singletonObjects.get(beanName);
-        if(object != null){
-            return object;
-        }
         BeanDefination beanDefination = beanDefinationMap.get(beanName);
         if(beanDefination != null){
-            object = createBean(beanName,beanDefination);
-            if(beanDefination.getScope().equals("singleton")){
+            throw new RuntimeException("spring容器未找到此bean的定义");
+        }
+        Object object = null;
+        if(beanDefination.getScope().equals("singleton")){
+            object = singletonObjects.get(beanName);
+            if(object == null){
+                object = createBean(beanName,beanDefination);
                 singletonObjects.put(beanName,object);
             }
-            return object;
+        }else {
+            object = createBean(beanName,beanDefination);
         }
+        return object;
 
-         throw new RuntimeException("spring容器未找到此bean的定义");
+
     }
 }
